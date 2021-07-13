@@ -1,6 +1,18 @@
 
 
 
+
+function gp_reg_all_threads(meta, R ; nt = 16, bt = 1, n = size(R, 1))
+        BLAS.set_num_threads(bt)
+        ap = Float64.(meta.Age)
+        st = range(minimum(meta.Age), maximum(meta.Age), length=50)
+    
+        GPT = tmap(i -> gp_reg(ap, R[i, :], st), nt, 1:n)
+        BLAS.set_num_threads(btc)
+        GPT
+end
+
+
 function gp_reg_matern52(t, y, st, initparams=(1.0, 1.0, log(std(y))))
     σf, ℓ, σn = initparams
     kern = Mat52Iso(ℓ, σf)

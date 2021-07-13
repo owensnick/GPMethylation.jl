@@ -4,5 +4,7 @@ module GPMethylation
 using DataFrames, CSV, RData
 using GaussianProcesses 
 using LinearAlgebra
+using ThreadTools
+
 
 end
