@@ -2,12 +2,11 @@
 
 
 
-function gp_reg_all_threads(meta, R ; nt = 16, bt = 1, n = size(R, 1))
+function gp_reg_all_threads(meta, R, gp_reg, ; nt = 16, bt = 1, n = size(R, 1), gpargs...)
         BLAS.set_num_threads(bt)
         ap = Float64.(meta.Age)
         st = range(minimum(meta.Age), maximum(meta.Age), length=50)
-    
-        GPT = tmap(i -> gp_reg(ap, R[i, :], st), nt, 1:n)
+        GPT = tmap(i -> gp_reg(ap, R[i, :], st, gpargs...), nt, 1:n)
         BLAS.set_num_threads(btc)
         GPT
 end
