@@ -3,7 +3,8 @@
     loaddata(file)
 
     Loads methylation data.
-    `file` is a `RData` file containing a matrix of size `(n x m)` for `n` samples and `m` probes.
+    `file` is a `RData` file containing a matrix of size `(n x m)` 
+    for `n` samples and `m` probes.
 """
 function loaddata(file)
 
