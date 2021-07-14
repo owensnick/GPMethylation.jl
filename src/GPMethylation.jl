@@ -9,4 +9,6 @@ using ThreadTools
 
 export loaddata, loadsamplemeta, loadprobemeta
 
+include("loaddata.jl")
+
 end
