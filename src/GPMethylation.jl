@@ -7,4 +7,6 @@ using LinearAlgebra
 using ThreadTools
 
 
+export loaddata, loadsamplemeta, loadprobemeta
+
 end
