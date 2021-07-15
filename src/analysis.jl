@@ -17,7 +17,7 @@ function run_gpregression(samplemetafile, betafile, outdir, m=50; verbose=true)
     nt = Threads.nthreads()
     
     verbose && println("[GPM]\tRunning GP regression on methylation time series with ", nt, " threads.")
-    meta, probes, beta = loadall(samplemetafile, betafile)
+    meta, probes, beta = loadall(samplemetafile, betafile, verbose)
     ap = Float64.(meta.Age)
     st = range(minimum(ap), maximum(ap), length=m)
     starttime = time()
@@ -34,6 +34,11 @@ function run_gpregression(samplemetafile, betafile, outdir, m=50; verbose=true)
 end
 
 
+"""
+    saverdata(probes, samples, GPT, outdir; verbose=true)
+
+Save gp mean and var in RData format.
+"""
 function saverdata(probes, samples, GPT, outdir; verbose=true)
 
     file = joinpath(outdir, "gpmeanvar.rdata")
@@ -58,6 +63,12 @@ function saverdata(probes, samples, GPT, outdir; verbose=true)
 
 end
 
+
+"""
+    gpstats(probes, GPT, beta)  
+
+Writes tab-separated file with gp stats.
+"""
 function gpstats(probes, GPT, beta)
 
     @assert length(probes) == length(GPT)

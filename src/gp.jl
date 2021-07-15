@@ -1,7 +1,7 @@
 
 
 """
-    gpreg_all_threads(meta, beta, gp_reg, ; nt = 16, bt = 1, n = size(R, 1), gpargs...)
+    gpreg_all_threads(t, beta, st, gpreg, ; nt = 16, bt = 1, n = size(beta, 2))
 
 Wrapper to run a Gaussian Process regression function `gp_reg ∈ {gp_reg_matern52, gp_reg_const, gp_reg_linear}` with multiple threads.
     
