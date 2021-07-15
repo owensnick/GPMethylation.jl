@@ -94,20 +94,34 @@ end
 
 Loads samplefmetafile and `RData` file `betafile` ensures samples details correspond and filters samples
 """
-function loadall(metafile, betafile)
+function loadall(metafile, betafile, verbose=true)
+
+    verbose && println("[GPM]\tLoaded sample meta file ", metafile)
+    verbose && println("[GPM]\tLoaded probe data file ", betafile)
     meta = loadsamplemeta(samplemetafile)
     samples, probes, beta = loaddata(betafile)
+
 
 
     if meta.Sample != samples
         error("Sample meta does not correspond to beta colnames")
     end
 
+    verbose && println("[GPM]\tLoaded meta information for ", size(meta, 1), " samples.")
+    verbose && println("[GPM]\tLoaded probe data on  ", size(beta, 1), " probes and ", size(beta, 2), " samples.")
+
     ### Filter samples
     if :Filter ∈ propertynames(meta)
         ind = meta.Filter .== 1
+
+        if verbose
+            println("[GPM]\tExcluding ", sum(.!ind), " samples:")
+            display(meta[.!ind, :])
+        end
         meta = meta[ind, :]
         beta = beta[:, ind]
+
+
     end
 
     ### Converts row major R to column major Julia

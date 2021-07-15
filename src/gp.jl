@@ -12,13 +12,11 @@ Allows balance of threads to run regression on independent probes in parallel vs
 Currently, recommend setting BLAS threads `bt = 1` and parallelising over multiple probes.
 
 """
-function gpreg_all_threads(meta, beta, g_reg, ; nt = 16, bt = 1, n = size(R, 1), m=50, gpargs...)
+function gpreg_all_threads(t, beta, st, gpreg, ; nt = 16, bt = 1, n = size(beta, 2))
         BLAS.set_num_threads(bt)
-        ap = Float64.(meta.Age)
-        st = range(minimum(meta.Age), maximum(meta.Age), length=m)
-        GPT = tmap(i -> gpreg(ap, beta[:, i], st, gpargs...), nt, 1:n)
+        GPT = tmap(i -> gpreg(t, beta[:, i], st), nt, 1:n)
         BLAS.set_num_threads(btc)
-        st, GPT
+        GPT
 end
 
 
@@ -36,7 +34,7 @@ function gpmodels(t, y, st)
     gpl = gpreg_linear(t, y, st)
     gpm = gpreg_matern52(t, y, st)
 
-    (const_mll    = gpc.gp.mll,
+    params = (const_mll    = gpc.gp.mll,
      const_σn2    = exp(2*gpc.gp.logNoise.value),
      const_σf2    = gpc.gp.kernel.σ2,
      linear_mll   = gpl.gp.mll,
@@ -46,13 +44,11 @@ function gpmodels(t, y, st)
      mat52_mll    = gpm.gp.mll,
      mat52_σn2    = exp(2*gpm.gp.logNoise.value),
      mat52_σf2    = gpm.gp.kernel.σ2,
-     mat52_ℓ      = gpm.gp.kernel.ℓ,
-     const_μ      = gpc.μ,
-     const_v      = gpc.v,
-     linear_μ     = gpl.μ,
-     linear_v     = gpl.v,
-     mat52_μ      = gpm.μ,
-     mat52_v      = gpm.v )
+     mat52_ℓ      = gpm.gp.kernel.ℓ)
+
+     gpmeanvar = (mat52_μ   = gpm.μ, mat52_v  = gpm.v)
+
+     params, gpmeanvar
 
 end
 
