@@ -1,7 +1,7 @@
 
 
 """
-    gp_reg_all_threads(meta, beta, gp_reg, ; nt = 16, bt = 1, n = size(R, 1), gpargs...)
+    gpreg_all_threads(meta, beta, gp_reg, ; nt = 16, bt = 1, n = size(R, 1), gpargs...)
 
 Wrapper to run a Gaussian Process regression function `gp_reg ∈ {gp_reg_matern52, gp_reg_const, gp_reg_linear}` with multiple threads.
     
@@ -12,7 +12,7 @@ Allows balance of threads to run regression on independent probes in parallel vs
 Currently, recommend setting BLAS threads `bt = 1` and parallelising over multiple probes.
 
 """
-function gp_reg_all_threads(meta, beta, gp_reg, ; nt = 16, bt = 1, n = size(R, 1), gpargs...)
+function gpreg_all_threads(meta, beta, gp_reg, ; nt = 16, bt = 1, n = size(R, 1), gpargs...)
         BLAS.set_num_threads(bt)
         ap = Float64.(meta.Age)
         st = range(minimum(meta.Age), maximum(meta.Age), length=50)
@@ -75,7 +75,7 @@ GP regression with `Const(σf) + LinIso(ℓ)` kernel.
 `ℓ`  - initial lengthscale
 `σf` - initial function variance
 """
-function gpreg_const(t, y, st, kernparams=(1.0, 1.0), logσn=log(std(y)))
+function gpreg_linear(t, y, st, kernparams=(1.0, 1.0), logσn=log(std(y)))
     logℓ, logσf = kernparams
     gpreg(t, y, st, Const(logσf) + LinIso(logℓ), logσn)
 end  
