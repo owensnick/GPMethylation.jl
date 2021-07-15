@@ -30,7 +30,7 @@ function run_gpregression(samplemetafile, betafile, outdir, m=50; verbose=true)
 
     f = CSV.write(joinpath(outdir, "gpstats.tsv"), gps, delim='\t')
     verbose && println("[GPM]\tWritten ", f)
-    
+    saverdata(probes, st, GPT, outdir; verbose=verbose)
 end
 
 
@@ -55,7 +55,7 @@ function saverdata(probes, samples, GPT, outdir; verbose=true)
         colnames(gp_var) <- samples
         rownames(gp_var) <- probes
 
-        save(gp_mean, gp_var, $file)
+        save(gp_mean, gp_var, file=$file)
     """
 
     verbose && println("[GPM]\tWritten ", file)
