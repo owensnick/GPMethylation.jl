@@ -77,7 +77,7 @@ function loadresults_rdata(file)
     """
     @rget gp_mean gp_var st probes
 
-    (μ=gp_mean, v=gp_var, st=st, probes=probs)
+    (μ=gp_mean, v=gp_var, st=st, probes=probes)
 end
 
 
