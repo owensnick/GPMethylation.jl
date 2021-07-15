@@ -46,8 +46,11 @@ end
     gpreg_matern52(t, y, st, kernparams=(1.0, 1.0) , log(std(y))))
 
 GP regression with `Mat52Iso(ℓ, σf)` kernel.
+
 `kernparms = (logℓ, log(σf))`
+
 `ℓ`  - initial lengthscale
+
 `σf` - initial function variance
 """
 function gpreg_matern52(t, y, st, kernparams=(1.0, 1.0), logσn=log(std(y)))
@@ -56,10 +59,12 @@ function gpreg_matern52(t, y, st, kernparams=(1.0, 1.0), logσn=log(std(y)))
 end
 
 """
-gpreg_const(t, y, st, kernparams=(1.0) , log(std(y))))
+    gpreg_const(t, y, st, kernparams=(1.0) , log(std(y))))
 
 GP regression with `Const(σf)`.
+
 `kernparms = (log(σf))`
+
 `σf` - initial function variance
 """
 function gpreg_const(t, y, st, kernparams=(1.0), logσn=log(std(y)))
@@ -68,11 +73,14 @@ function gpreg_const(t, y, st, kernparams=(1.0), logσn=log(std(y)))
 end  
 
 """
-gpreg_linear(t, y, st, kernparams=(1.0) , log(std(y))))
+    gpreg_linear(t, y, st, kernparams=(1.0) , log(std(y))))
 
 GP regression with `Const(σf) + LinIso(ℓ)` kernel.
+
 `kernparms = (logℓ, log(σf))`
+
 `ℓ`  - initial lengthscale
+
 `σf` - initial function variance
 """
 function gpreg_linear(t, y, st, kernparams=(1.0, 1.0), logσn=log(std(y)))
