@@ -31,7 +31,6 @@ function run_gpregression(samplemetafile, betafile, outdir, m=50; verbose=true)
     f = CSV.write(joinpath(outdir, "gpstats.tsv"), gps, delim='\t')
     verbose && println("[GPM]\tWritten ", f)
     
-    saverdata(probes, samples, GPT, outdir, verbose=verbose)
 end
 
 
