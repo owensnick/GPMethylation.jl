@@ -42,6 +42,7 @@ Loads sample meta, a tab or commma separated file that must contain the followin
 - `Sex`  {M, F} or missing
 - `Age` floating point age
 
+`Sample` should match `colnames` of RData file. 
 
 
 """
@@ -58,6 +59,9 @@ Loads probe meta, a tab or commma separated file that must contain the following
 | cg00000029 |
 | cg00000103 |
 | cg00000109 |
+
+
+Can be used to override the `rownames` in `RData` file.
 
 """
 loadprobemeta(file) = loadmeta(file, [:Probe], "probe")
