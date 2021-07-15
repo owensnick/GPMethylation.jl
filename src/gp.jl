@@ -13,8 +13,11 @@ Currently, recommend setting BLAS threads `bt = 1` and parallelising over multip
 
 """
 function gpreg_all_threads(t, beta, st, gpreg, ; nt = 16, bt = 1, n = size(beta, 2))
+        btc = ccall((:openblas_get_num_threads64_, Base.libblas_name), Cint, ())
         BLAS.set_num_threads(bt)
-        GPT = tmap(i -> gpreg(t, beta[:, i], st), nt, 1:n)
+        # GPT = tmap(i -> gpreg(t, beta[:, i], st), nt, 1:n)
+        # GPT = map(i -> gpreg(t, beta[:, i], st), nt, 1:n)
+        GPT = map(i -> gpmodels(t, beta[:, i], st), 1:n)
         BLAS.set_num_threads(btc)
         GPT
 end
@@ -39,8 +42,8 @@ function gpmodels(t, y, st)
      const_σf2    = gpc.gp.kernel.σ2,
      linear_mll   = gpl.gp.mll,
      linear_σn2   = exp(2*gpl.gp.logNoise.value),
-     linear_σf2   = gpl.gp.kernel.σ2,
-     linear_ℓ     = gpl.gp.kernel.ℓ,
+     linear_σf2   = gpl.gp.kernel.kleft.σ2,
+     linear_ℓ     = sqrt(gpl.gp.kernel.kright.ℓ2),
      mat52_mll    = gpm.gp.mll,
      mat52_σn2    = exp(2*gpm.gp.logNoise.value),
      mat52_σf2    = gpm.gp.kernel.σ2,
