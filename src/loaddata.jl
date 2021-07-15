@@ -94,9 +94,9 @@ end
 
 Loads samplefmetafile and `RData` file `betafile` ensures samples details correspond and filters samples
 """
-function loadall(metafile, betafile, verbose=true)
+function loadall(samplemetafile, betafile, verbose=true)
 
-    verbose && println("[GPM]\tLoaded sample meta file ", metafile)
+    verbose && println("[GPM]\tLoaded sample meta file ", samplemetafile)
     verbose && println("[GPM]\tLoaded probe data file ", betafile)
     meta = loadsamplemeta(samplemetafile)
     samples, probes, beta = loaddata(betafile)
