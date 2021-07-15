@@ -29,7 +29,7 @@ run_gpregression(samplemetafile, betafile, outdir, m)
 ```
 See [Loading Data](@ref) for descriptions of file types.
 
-At a terminal run
+At a terminal run:
 ```bash
 julia -t N gpanalysis.jl
 ```
