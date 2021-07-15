@@ -12,13 +12,48 @@ Allows balance of threads to run regression on independent probes in parallel vs
 Currently, recommend setting BLAS threads `bt = 1` and parallelising over multiple probes.
 
 """
-function gpreg_all_threads(meta, beta, gp_reg, ; nt = 16, bt = 1, n = size(R, 1), gpargs...)
+function gpreg_all_threads(meta, beta, g_reg, ; nt = 16, bt = 1, n = size(R, 1), m=50, gpargs...)
         BLAS.set_num_threads(bt)
         ap = Float64.(meta.Age)
-        st = range(minimum(meta.Age), maximum(meta.Age), length=50)
-        GPT = tmap(i -> gp_reg(ap, beta[i, :], st, gpargs...), nt, 1:n)
+        st = range(minimum(meta.Age), maximum(meta.Age), length=m)
+        GPT = tmap(i -> gpreg(ap, beta[:, i], st, gpargs...), nt, 1:n)
         BLAS.set_num_threads(btc)
-        GPT
+        st, GPT
+end
+
+
+"""
+    gpmodels(t, y, st)
+
+Runs GP regression for constant, linear and Matern52 kernels.
+"""
+function gpmodels(t, y, st)
+
+    ### for now hardcode const, linear and mat52 regression
+    ### improvement would be to specify vector of kernels and loop over
+
+    gpc = gpreg_const(t, y, st)
+    gpl = gpreg_linear(t, y, st)
+    gpm = gpreg_matern52(t, y, st)
+
+    (const_mll    = gpc.gp.mll,
+     const_σn2    = exp(2*gpc.gp.logNoise.value),
+     const_σf2    = gpc.gp.kernel.σ2,
+     linear_mll   = gpl.gp.mll,
+     linear_σn2   = exp(2*gpl.gp.logNoise.value),
+     linear_σf2   = gpl.gp.kernel.σ2,
+     linear_ℓ     = gpl.gp.kernel.ℓ,
+     mat52_mll    = gpm.gp.mll,
+     mat52_σn2    = exp(2*gpm.gp.logNoise.value),
+     mat52_σf2    = gpm.gp.kernel.σ2,
+     mat52_ℓ      = gpm.gp.kernel.ℓ,
+     const_μ      = gpc.μ,
+     const_v      = gpc.v,
+     linear_μ     = gpl.μ,
+     linear_v     = gpl.v,
+     mat52_μ      = gpm.μ,
+     mat52_v      = gpm.v )
+
 end
 
 
@@ -33,13 +68,13 @@ Generic GP stationary zero mean regression with Gaussian likelihood. Params:
   - `logσn` log(σn)
 
 Returns:
-Named tuple (gp=gp, μ=μ, v=v, st=st)
+Named tuple (gp=gp, μ=μ, v=v)
 """
 function gpreg(t, y, st, kernel, logσn=log(std(y)))
     gp = GP(t, y, MeanZero(), kernel, logσn)
     optimize!(gp)
     μ, v = predict_y(gp, st)
-    (gp=gp, μ=μ, v=v, st=st)
+    (gp=gp, μ=μ, v=v)
 end
 
 """
