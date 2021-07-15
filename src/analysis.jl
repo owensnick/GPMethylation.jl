@@ -113,7 +113,7 @@ function gpstats(probes, GPT, beta)
         push!(evdf, (probe_min, probe_max, probe_ev, gp_min, gp_max, gp_ev))
     end
 
-    [DataFrame(Probe=probes) gpdf, evdf]
+    [DataFrame(Probe=probes) gpdf evdf]
 end
 
 
