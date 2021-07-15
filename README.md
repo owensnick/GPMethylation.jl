@@ -1,5 +1,8 @@
 # GPMethylation
 
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://owensnick.github.io/GPMethylation.jl/dev)
+
+
 GPMethylation.jl a package that runs Gaussian process regression and model selection on methylation time series.
 
 
