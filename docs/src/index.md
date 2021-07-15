@@ -27,8 +27,9 @@ m              = 50  # number of points at which to calculate GP mean and var be
 
 run_gpregression(samplemetafile, betafile, outdir, m)
 ```
+See [Loading Data](@ref) for descriptions of file types.
 
-Then at a terminal run
+At a terminal run
 ```bash
 julia -t N gpanalysis.jl
 ```
