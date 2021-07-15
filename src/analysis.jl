@@ -63,6 +63,36 @@ function saverdata(probes, samples, GPT, outdir; verbose=true)
 
 end
 
+"""
+    loadresults_rdata(file)
+
+Loads gp_mean and gp_var results from `RData` file back into Julia.
+"""
+function loadresults_rdata(file)
+
+    R"""
+        load($file)
+        st <- colnames(gp_mean)
+        probes <- rownames(gp_mean)
+    """
+    @rget gp_mean gp_var st probes
+
+    (μ=gp_mean, v=gp_var, st=st, probes=probs)
+end
+
+
+"""
+    loadresults(outdir)
+
+Loads gpstats and GP mean and var
+"""
+function loadresults(outdir)
+    gps = CSV.read(joinpath(outdir, "gpstats.tsv"), DataFrame)
+    gpres = loadresults_rdata(joinpath(outdir, "gpmeanvar.rdata"))
+
+    gps, gpres
+end
+
 
 """
     gpstats(probes, GPT, beta)  
