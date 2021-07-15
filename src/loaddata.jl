@@ -1,4 +1,5 @@
 
+
 """
     loaddata(file)
 
@@ -23,8 +24,8 @@ function loaddata(file)
     
     @rget samples probes beta
 
-    ## beta is rowmajor in R, flip to column major in Julia
-    samples, probes, Matrix(beta')
+    
+    samples, probes, beta
     
 end
 
@@ -32,17 +33,18 @@ end
 """
     loadsamplemeta(file)
 
-Loads sample meta, a tab or commma separated file that must contain the following columns (in any order):
+Loads sample meta, a tab or commma separated file that must contain the following first threecolumns (in any order):
 
-| Sample    | Sex   | Age   |
-|-----------|-------|-------|
-|  Sample_1 | F     | 1.0   |
-|  Sample_2 | M     | 2.0   |
-|  Sample_3 | M     | 10.0  |
+| Sample    | Sex   | Age   |  Filter  |
+|-----------|-------|-------|----------|
+|  Sample_1 | F     | 1.0   |   1      |
+|  Sample_2 | M     | 2.0   |   0      |
+|  Sample_3 | M     | 10.0  |   1      |
 
 - `Sample` unique string identifier
 - `Sex`  {M, F} or missing
 - `Age` floating point age
+- `Filter` optional column of `{1, 0}`s to exclude samples, when `Filter = 0` sample is excluded.
 
 `Sample` should match `colnames` of RData file. 
 
@@ -85,4 +87,29 @@ function loadmeta(file, mandatorycols, label)
         error("Loading $label meta. Found cols: $colstring\nMissing: $mcolstring")
     end
     meta
+end
+
+"""
+    loadall(samplemetafile, betafile)
+
+Loads samplefmetafile and `RData` file `betafile` ensures samples details correspond and filters samples
+"""
+function loadall(metafile, betafile)
+    meta = loadsamplemeta(samplemetafile)
+    samples, probes, beta = loaddata(betafile)
+
+
+    if meta.Sample != samples
+        error("Sample meta does not correspond to beta colnames")
+    end
+
+    ### Filter samples
+    if :Filter ∈ propertynames(meta)
+        ind = meta.Filter .== 1
+        meta = meta[ind, :]
+        beta = beta[:, ind]
+    end
+
+    ### Converts row major R to column major Julia
+    meta, probes, Matrix(beta')
 end
