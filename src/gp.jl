@@ -62,7 +62,7 @@ GP regression with `Const(σf)`.
 `kernparms = (log(σf))`
 `σf` - initial function variance
 """
-function gpreg_const(t, y, st, kernparams=(1.0, 1.0), logσn=log(std(y)))
+function gpreg_const(t, y, st, kernparams=(1.0), logσn=log(std(y)))
     logσf = kernparams
     gpreg(t, y, st, Const(logσf), logσn)
 end  
