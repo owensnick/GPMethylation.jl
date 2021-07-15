@@ -3,17 +3,29 @@
     loaddata(file)
 
 Loads methylation data.
+
   
-`file` is a `RData` file containing a matrix of size `(n x m)` 
-for `n` samples and `m` probes.
-    
+`file` is a `RData` file containing a matrix named `betas.dasen` of size `(n x m)` for `n` samples and `m` probes.
+
+
+Sample names and probe names taken from colnames and rownames respectively.
+
 
 """
 function loaddata(file)
     
+    R"""
+        load($file)
+        samples <- colnames(betas.dasen)
+        probes  <- rownames(betas.dasen)
+        beta    <- betas.dasen
+    """
     
+    @rget samples probes beta
+    samples, probes, beta
     
 end
+
 
 """
     loadsamplemeta(file)
