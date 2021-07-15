@@ -22,7 +22,9 @@ function loaddata(file)
     """
     
     @rget samples probes beta
-    samples, probes, beta
+
+    ## beta is rowmajor in R, flip to column major in Julia
+    samples, probes, Matrix(beta')
     
 end
 
