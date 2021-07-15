@@ -1,6 +1,6 @@
 module GPMethylation
 
-
+using Statistics
 using DataFrames, CSV, RData
 using GaussianProcesses 
 using LinearAlgebra
