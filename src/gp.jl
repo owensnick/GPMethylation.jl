@@ -1,24 +1,44 @@
 
 
 """
-    gpreg_all_threads(t, beta, st, gpreg, ; nt = 16, bt = 1, n = size(beta, 2))
+gpreg_all_threads(t, beta, st, gpreg=gpmodels ; nt = 16, bt = 1, n = size(beta, 2))
 
 Wrapper to run a Gaussian Process regression function `gp_reg ∈ {gp_reg_matern52, gp_reg_const, gp_reg_linear}` with multiple threads.
     
-Keyword argument `nt = 16` specifies number of threads. 
-
 Allows balance of threads to run regression on independent probes in parallel vs threads used by BLAS library for parallelising linear algebra used in regression of a single probe.
 
 Currently, recommend setting BLAS threads `bt = 1` and parallelising over multiple probes.
 
 """
-function gpreg_all_threads(t, beta, st, gpreg, ; nt = 16, bt = 1, n = size(beta, 2))
+function gpreg_all_threads(t, beta, st, gpreg=gpmodels ; nt = 16, bt = 1, n = size(beta, 2))
         btc = ccall((:openblas_get_num_threads64_, Base.libblas_name), Cint, ())
         BLAS.set_num_threads(bt)
-        GPT = tmap(i -> gpreg(t, beta[:, i], st), nt, 1:n)
-        # GPT = map(i -> gpreg(t, beta[:, i], st), 1:n)
-        BLAS.set_num_threads(btc)
-        GPT
+
+    dft = DataFrame(const_mll    = Vector{Float64}(undef, n),
+                    const_σn2    = Vector{Float64}(undef, n),
+                    const_σf2    = Vector{Float64}(undef, n),
+                    linear_mll   = Vector{Float64}(undef, n),
+                    linear_σn2   = Vector{Float64}(undef, n),
+                    linear_σf2   = Vector{Float64}(undef, n),
+                    linear_ℓ     = Vector{Float64}(undef, n),
+                    mat52_mll    = Vector{Float64}(undef, n),
+                    mat52_σn2    = Vector{Float64}(undef, n),
+                    mat52_σf2    = Vector{Float64}(undef, n),
+                    mat52_ℓ      = Vector{Float64}(undef, n))
+    μ = Matrix{Float64}(undef, length(st), n)
+    v = Matrix{Float64}(undef, length(st), n)
+
+    p = Progress(n, barlen=75)
+    Threads.@threads for i = 1:n
+        params, gpu, gpv = gpreg(t, beta[:, i], st)
+        dft[i, :] = params
+        μ[:, i] .= gpu
+        v[:, i] .= gpv
+        next!(p)
+    end
+
+    BLAS.set_num_threads(btc)
+    dft, μ, v
 end
 
 
@@ -48,10 +68,7 @@ function gpmodels(t, y, st)
      mat52_σf2    = gpm.gp.kernel.σ2,
      mat52_ℓ      = gpm.gp.kernel.ℓ)
 
-     gpmeanvar = (mat52_μ   = gpm.μ, mat52_v  = gpm.v)
-
-     params, gpmeanvar
-
+     params, gpm.μ,  gpm.v
 end
 
 

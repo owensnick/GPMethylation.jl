@@ -21,16 +21,16 @@ function run_gpregression(samplemetafile, betafile, outdir, m=50; verbose=true)
     ap = Float64.(meta.Age)
     st = range(minimum(ap), maximum(ap), length=m)
     starttime = time()
-    GPT = gpreg_all_threads(ap, beta, st, gpmodels, nt = 16)
+    dfgp, μ, v = gpreg_all_threads(ap, beta, st, gpmodels, nt = 16)
     verbose && println("[GPM]\tComplete in ", time() - starttime, " seconds")
 
 
-    gps = gpstats(probes, GPT, beta)
+    gps = gpstats(probes, dfgp, beta, μ)
     mkpath(outdir)
 
     f = CSV.write(joinpath(outdir, "gpstats.tsv"), gps, delim='\t')
     verbose && println("[GPM]\tWritten ", f)
-    saverdata(probes, st, GPT, outdir; verbose=verbose)
+    saverdata(probes, st, μ, v, outdir; verbose=verbose)
 end
 
 
@@ -39,13 +39,12 @@ end
 
 Save gp mean and var in RData format.
 """
-function saverdata(probes, samples, GPT, outdir; verbose=true)
+function saverdata(probes, samples, μ, v, outdir; verbose=true)
 
     file = joinpath(outdir, "gpmeanvar.rdata")
     
-
-    gp_mean = mapreduce(g -> g[2].mat52_μ, hcat, GPT)';
-    gp_var  = mapreduce(g -> g[2].mat52_v, hcat, GPT)';
+    gp_mean = μ'
+    gp_var  = v'
 
     @rput gp_mean gp_var probes samples
 
@@ -77,7 +76,7 @@ function loadresults_rdata(file)
     """
     @rget gp_mean gp_var st probes
 
-    (μ=gp_mean, v=gp_var, st=st, probes=probes)
+    (μ=Matrix(gp_mean'), v=Matrix(gp_var'), st=parse.(Float64, st), probes=probes)
 end
 
 
@@ -99,51 +98,23 @@ end
 
 Writes tab-separated file with gp stats.
 """
-function gpstats(probes, GPT, beta)
+function gpstats(probes, dfgp, beta, gpμ)
 
-    @assert length(probes) == length(GPT)
+    @assert length(probes) == size(dfgp, 1)
 
-    gpdf = DataFrame(
-     const_mll    = Float64[],
-     const_σn2    = Float64[],
-     const_σf2    = Float64[],
-     linear_mll   = Float64[],
-     linear_σn2   = Float64[],
-     linear_σf2   = Float64[],
-     linear_ℓ     = Float64[],
-     mat52_mll    = Float64[],
-     mat52_σn2    = Float64[],
-     mat52_σf2    = Float64[],
-     mat52_ℓ      = Float64[])
+    probe_min = vec(minimum(beta, 1))
+    probe_max = vec(maximum(beta, 1))
+    probe_env  = probe_max .- probe_min
 
-     evdf = DataFrame(
-     probe_min     = Float64[],
-     probe_max     = Float64[],
-     probe_env     = Float64[],
-     gp_min        = Float64[],
-     gp_max        = Float64[],
-     gp_env        = Float64[])
+    gp_min = vec(minimum(gpμ, 1))
+    gp_max = vec(maximum(gpμ, 1))
+    gp_env  = gp_max .- gp_min
 
 
-    for i = 1:length(probes)
+    evdf = DataFrame(probe_min=probe_min, probe_max=probe_max, probe_env=probe_env,
+                     gp_min=gp_min, gp_max=gp_max, gp_env=gp_env)
 
-        gpparams = GPT[i][1]
-        gp_meanvar = GPT[i][2]
-
-        probe_min = minimum(beta[:, i])
-        probe_max = maximum(beta[:, i])
-        probe_ev  = probe_max - probe_min
-
-        gp_min = minimum(gp_meanvar.mat52_μ)
-        gp_max = maximum(gp_meanvar.mat52_μ)
-        gp_ev  = gp_max - gp_min
-
-        
-        push!(gpdf, gpparams)
-        push!(evdf, (probe_min, probe_max, probe_ev, gp_min, gp_max, gp_ev))
-    end
-
-    [DataFrame(Probe=probes) gpdf evdf]
+    [DataFrame(Probe=probes) dfgp evdf]
 end
 
 
