@@ -2,8 +2,8 @@
 
 ```@docs
 run_gpregression(samplemetafile, betafile, outdir, m=50; verbose=true)
-saverdata(probes, samples, GPT, outdir; verbose=true)
-gpstats(probes, GPT, beta)  
-loadresults_rdata(file)
+saverdata(probes, samples, μ, v, outdir; verbose=true)
+gpstats(probes, dfgp, beta, gpμ) 
 loadresults(outdir)
+GPMethylation.loadresults_rdata(file)
 ```

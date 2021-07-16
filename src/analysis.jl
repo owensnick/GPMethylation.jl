@@ -35,7 +35,7 @@ end
 
 
 """
-    saverdata(probes, samples, GPT, outdir; verbose=true)
+    saverdata(probes, samples, μ, v, outdir; verbose=true)
 
 Save gp mean and var in RData format.
 """
@@ -94,7 +94,7 @@ end
 
 
 """
-    gpstats(probes, GPT, beta)  
+    gpstats(probes, dfgp, beta, gpμ)
 
 Writes tab-separated file with gp stats.
 """
