@@ -102,8 +102,8 @@ function gpstats(probes, dfgp, beta, gpμ)
 
     @assert length(probes) == size(dfgp, 1)
 
-    probe_min = vec(minimum(beta, 1))
-    probe_max = vec(maximum(beta, 1))
+    probe_min = vec(minimum(beta, dims=1))
+    probe_max = vec(maximum(beta, dims=1))
     probe_env  = probe_max .- probe_min
 
     gp_min = vec(minimum(gpμ, 1))
