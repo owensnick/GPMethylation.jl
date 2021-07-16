@@ -106,8 +106,8 @@ function gpstats(probes, dfgp, beta, gpμ)
     probe_max = vec(maximum(beta, dims=1))
     probe_env  = probe_max .- probe_min
 
-    gp_min = vec(minimum(gpμ, 1))
-    gp_max = vec(maximum(gpμ, 1))
+    gp_min = vec(minimum(gpμ, dims=1))
+    gp_max = vec(maximum(gpμ, dims=1))
     gp_env  = gp_max .- gp_min
 
 
