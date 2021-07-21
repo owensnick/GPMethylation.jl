@@ -41,16 +41,26 @@ function gpreg_all_threads(t, beta, st, gpreg=gpmodels ; nt = 16, bt = 1, n = si
     dft, μ, v
 end
 
+filtmissing(t, y) = t, y
+function filtmissing(t, y::Vector{Union{T, Missing}}) where {T}
+    ind = .!ismissing.(y)
+    t[ind], Vector{T}(y[ind])
+end
+
+
 
 """
     gpmodels(t, y, st)
 
 Runs GP regression for constant, linear and Matern52 kernels.
 """
-function gpmodels(t, y, st)
+function gpmodels(td, yd, st)
 
     ### for now hardcode const, linear and mat52 regression
     ### improvement would be to specify vector of kernels and loop over
+
+    ### remove missings if necessary
+    t, y = filtmissing(td, yd)
 
     gpc = gpreg_const(t, y, st)
     gpl = gpreg_linear(t, y, st)
