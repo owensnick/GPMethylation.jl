@@ -67,16 +67,16 @@ function gpmodels(td, yd, st)
     gpm = gpreg_matern52(t, y, st)
 
     params = (const_mll    = gpc.gp.mll,
-     const_σn2    = exp(2*gpc.gp.logNoise.value),
-     const_σf2    = gpc.gp.kernel.σ2,
-     linear_mll   = gpl.gp.mll,
-     linear_σn2   = exp(2*gpl.gp.logNoise.value),
-     linear_σf2   = gpl.gp.kernel.kleft.σ2,
-     linear_ℓ     = sqrt(gpl.gp.kernel.kright.ℓ2),
-     mat52_mll    = gpm.gp.mll,
-     mat52_σn2    = exp(2*gpm.gp.logNoise.value),
-     mat52_σf2    = gpm.gp.kernel.σ2,
-     mat52_ℓ      = gpm.gp.kernel.ℓ)
+     const_σn    = exp(gpc.gp.logNoise.value),
+     const_σf    = sqrt(gpc.gp.kernel.σ2),
+     linear_mll  = gpl.gp.mll,
+     linear_σn   = exp(gpl.gp.logNoise.value),
+     linear_σf   = sqrt(gpl.gp.kernel.kleft.σ2),
+     linear_ℓ    = sqrt(gpl.gp.kernel.kright.ℓ2),
+     mat52_mll   = gpm.gp.mll,
+     mat52_σn    = exp(gpm.gp.logNoise.value),
+     mat52_σf    = sqrt(gpm.gp.kernel.σ2),
+     mat52_ℓ     = gpm.gp.kernel.ℓ)
 
      params, gpm.μ,  gpm.v
 end
