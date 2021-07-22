@@ -96,7 +96,7 @@ end
 """
     gpstats(probes, dfgp, beta, gpμ)
 
-Writes tab-separated file with gp stats.
+Writes tab-separated file with gp stats. Can accept Union{T, Missing} beta, however, will fail if all values of a column are missing.
 """
 function gpstats(probes, dfgp, beta, gpμ)
 
@@ -115,7 +115,19 @@ function gpstats(probes, dfgp, beta, gpμ)
     evdf = DataFrame(probe_min=probe_min, probe_max=probe_max, probe_env=probe_env,
                      gp_min=gp_min, gp_max=gp_max, gp_env=gp_env)
 
-    [DataFrame(Probe=probes) dfgp evdf]
+    df = [DataFrame(Probe=probes) dfgp evdf]
+     rename!(df, 
+        :const_σn    => :const_sign,
+        :const_σf    => :const_sigf,
+        :linear_mll  => :linear_mll,
+        :linear_σn   => :linear_sign,
+        :linear_σf   => :linear_sigf,
+        :linear_ℓ    => :linear_ell,
+        :mat52_mll   => :mat52_mll,
+        :mat52_σn    => :mat52_sign,
+        :mat52_σf    => :mat52_sigf,
+        :mat52_ℓ     => :mat52_ell)    
+     df
 end
 
 
