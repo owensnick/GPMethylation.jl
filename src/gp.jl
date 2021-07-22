@@ -15,15 +15,15 @@ function gpreg_all_threads(t, beta, st, gpreg=gpmodels ; nt = 16, bt = 1, n = si
         BLAS.set_num_threads(bt)
 
     dft = DataFrame(const_mll    = Vector{Float64}(undef, n),
-                    const_σn2    = Vector{Float64}(undef, n),
-                    const_σf2    = Vector{Float64}(undef, n),
+                    const_σn     = Vector{Float64}(undef, n),
+                    const_σf     = Vector{Float64}(undef, n),
                     linear_mll   = Vector{Float64}(undef, n),
-                    linear_σn2   = Vector{Float64}(undef, n),
-                    linear_σf2   = Vector{Float64}(undef, n),
+                    linear_σn    = Vector{Float64}(undef, n),
+                    linear_σf    = Vector{Float64}(undef, n),
                     linear_ℓ     = Vector{Float64}(undef, n),
                     mat52_mll    = Vector{Float64}(undef, n),
-                    mat52_σn2    = Vector{Float64}(undef, n),
-                    mat52_σf2    = Vector{Float64}(undef, n),
+                    mat52_σn     = Vector{Float64}(undef, n),
+                    mat52_σf     = Vector{Float64}(undef, n),
                     mat52_ℓ      = Vector{Float64}(undef, n))
     μ = Matrix{Float64}(undef, length(st), n)
     v = Matrix{Float64}(undef, length(st), n)

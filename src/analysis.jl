@@ -24,7 +24,7 @@ function run_gpregression(samplemetafile, betafile, outdir, m=50; verbose=true, 
     gpf = ifelse(usepriors, gpmodels_prior, gpmodels)
 
     if usepriors
-        verbose && println("[GPM]\tUsing priors on kernel parameters")
+        verbose && println("[GPM]\tUsing priors on kernel parameters.")
     end
     starttime = time()
     dfgp, μ, v = gpreg_all_threads(ap, beta, st, gpf, nt = 16)
