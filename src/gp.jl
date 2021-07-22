@@ -135,7 +135,7 @@ function gpreg(t, y, st, kernel, logσn=log(std(y)))
 end
 
 """
-    gpreg_matern52(t, y, st, kernparams=(1.0, log(mean(y))) , log(std(y))))
+    gpreg_matern52_prior(t, y, st, kernparams=(2.0, log(mean(y))), logσn=log(std(y)), kernpriors=[Normal(4.7, 1.2), Normal(-1, 6)])
 
 GP regression with `Mat52Iso(ℓ, σf)` kernel.
 
@@ -199,7 +199,7 @@ function gpreg_linear(t, y, st, kernparams=(1.0, log(mean(y))), logσn=log(std(y
 end  
 
 """
-    gpreg_linear_prior(t, y, st, kernparams=(1.0) , log(std(y))))
+    gpreg_linear_prior(t, y, st, kernparams=(1.0, log(mean(y))), logσn=log(std(y)), kernpriors=[Normal(5.7, 2.2)])
 
 GP regression with `Const(σf) + LinIso(ℓ)` kernel.
 

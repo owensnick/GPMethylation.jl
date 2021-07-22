@@ -1,7 +1,7 @@
 
 
 """
-    run_gpregression(samplemetafile, betafile, m=50; verbose=true)
+    run_gpregression(samplemetafile, betafile, m=50; verbose=true, usepriors=true)
 
 Run analysis for model selection between constant, linear or non-linear (Mat52) kernels
 
@@ -12,16 +12,22 @@ Input:
   - `gpstats.tsv` - Tab separated file with marginal likelihoods and optimised kernel parameters for all kernels
   - `gpmeanvar.rdata` - RData file containing GP mean and variance for each probe
 - `m = 50` - Number of points to calculate GP mean and variance at between min and max Age.
+- usepriors=true - Use default priors on hyperparameters of kernels
 """
-function run_gpregression(samplemetafile, betafile, outdir, m=50; verbose=true)
+function run_gpregression(samplemetafile, betafile, outdir, m=50; verbose=true, usepriors=true)
     nt = Threads.nthreads()
     
     verbose && println("[GPM]\tRunning GP regression on methylation time series with ", nt, " threads.")
     meta, probes, beta = loadall(samplemetafile, betafile, verbose)
     ap = Float64.(meta.Age)
     st = range(minimum(ap), maximum(ap), length=m)
+    gpf = ifelse(usepriors, gpmodels_prior, gpmodels)
+
+    if usepriors
+        verbose && println("[GPM]\tUsing priors on kernel parameters")
+    end
     starttime = time()
-    dfgp, μ, v = gpreg_all_threads(ap, beta, st, gpmodels, nt = 16)
+    dfgp, μ, v = gpreg_all_threads(ap, beta, st, gpf, nt = 16)
     verbose && println("[GPM]\tComplete in ", time() - starttime, " seconds")
 
 
