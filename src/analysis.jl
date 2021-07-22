@@ -133,7 +133,24 @@ function gpstats(probes, dfgp, beta, gpμ)
         :mat52_σn    => :mat52_sign,
         :mat52_σf    => :mat52_sigf,
         :mat52_ℓ     => :mat52_ell)    
+
+    df[!, :LR_mat52_const]  = df.mat52_mll .- df.const_mll
+    df[!, :LR_mat52_linear] = df.mat52_mll .- df.linear_mll
+    df[!, :LR_linear_const] = df.linear_mll .- df.const_mll
+
+    bic_term = log.(vec(sum(.!ismissing.(beta), dims=1)))./2
+    df[!, :BIC_mat52_const]  = df.LR_mat52_const - bic_term
+    #df[!, :BIC_mat52_linear] = df.LR_mat52_linear ## mat52 and linear models have identical number of params
+    df[!, :BIC_linear_const] = df.LR_linear_const - bic_term
+
+    df[!, :PreferedModelLR]   = pref_model.(df.mat52_mll, df.linear_mll, df.const_mll)
+    
      df
+end
+
+function pref_model(mat52_mll, linear_mll, const_mll, labels=("Mat52", "Linear", "Const"))
+    i = argmax((mat52_mll, linear_mll, const_mll))
+    labels[i]
 end
 
 
