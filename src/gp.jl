@@ -113,7 +113,7 @@ GP regression with `Mat52Iso(ℓ, σf)` kernel.
 
 `σf` - initial function variance
 """
-function gpreg_matern52(t, y, st, kernparams=(1.0, 1.0), logσn=log(std(y)))
+function gpreg_matern52(t, y, st, kernparams=(1.0, log(mean(y))), logσn=log(std(y)))
     logℓ, logσf = kernparams
     gpreg(t, y, st, Mat52Iso(logℓ, logσf), logσn)
 end
@@ -127,7 +127,7 @@ GP regression with `Const(σf)`.
 
 `σf` - initial function variance
 """
-function gpreg_const(t, y, st, kernparams=(1.0), logσn=log(std(y)))
+function gpreg_const(t, y, st, kernparams=(log(mean(y))), logσn=log(std(y)))
     logσf = kernparams
     gpreg(t, y, st, Const(logσf), logσn)
 end  
@@ -143,7 +143,7 @@ GP regression with `Const(σf) + LinIso(ℓ)` kernel.
 
 `σf` - initial function variance
 """
-function gpreg_linear(t, y, st, kernparams=(1.0, 1.0), logσn=log(std(y)))
+function gpreg_linear(t, y, st, kernparams=(1.0, log(mean(y))), logσn=log(std(y)))
     logℓ, logσf = kernparams
     gpreg(t, y, st, Const(logσf) + LinIso(logℓ), logσn)
 end  
