@@ -2,7 +2,8 @@ module GPMethylation
 
 using Statistics
 using DataFrames, CSV, RData
-using GaussianProcesses 
+using GaussianProcesses
+using Distributions 
 using LinearAlgebra
 using ThreadTools
 using RCall
