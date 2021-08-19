@@ -18,6 +18,7 @@ ThreadTools = "dbf13d8f-d36e-4350-8970-f3a99faba1a8"
 
 [compat]
 GaussianProcesses = "= 0.12.2"
+ProgressMeter = "1"
 julia = "1"
 
 [extras]
