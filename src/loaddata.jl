@@ -81,7 +81,7 @@ function loadmeta(file, mandatorycols, label)
     meta = CSV.read(file, DataFrame)
     
     if length(intersect(mandatorycols, propertynames(meta))) != length(mandatorycols)
-        missingcols = setdist(mandatorycols, propertynames(meta))
+        missingcols = setdiff(mandatorycols, propertynames(meta))
         colstring = join(names(meta), ", ")
         mcolstring = join(missingcols, ", ")
         error("Loading $label meta. Found cols: $colstring\nMissing: $mcolstring")
